@@ -12,6 +12,6 @@
          syntaxCheck="true">
     <testsuite name="Phashionbaker - Testsuite">
         <directory>./</directory>
-        <directory>./Payment</directory>
+        <directory>./Payments/</directory>
     </testsuite>
 </phpunit>

@@ -1,4 +1,6 @@
 <?php
+namespace PhashionBaker\Payments;
+
 class TransactionType{
   static $DirectCharge = 'DIRECT CHARGE';
   static $Authorization = 'AUTHORIZATION';

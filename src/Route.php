@@ -1,6 +1,6 @@
 <?php
 namespace PhashionBaker;
-class Route implements RouteInterface{
+class Route implements I_Route{
   private $http = [];
   private $path = null;
   private $method = null;

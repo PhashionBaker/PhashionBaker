@@ -1,9 +1,8 @@
 <?php
 namespace PhashionBaker\Payments;
-
 use TransactionTypes;
 
-class Transactions extends Phalcon\Mvc\Model{
+class Transactions extends Phalcon/Mvc/Model{
   public $amount;
   public $currency;
   public $payment_source_id;
