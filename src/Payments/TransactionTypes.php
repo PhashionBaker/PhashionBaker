@@ -1,7 +1,7 @@
 <?php
 namespace PhashionBaker\Payments;
 
-class TransactionType{
+class TransactionTypes{
   static $DirectCharge = 'DIRECT CHARGE';
   static $Authorization = 'AUTHORIZATION';
   static $Capture = 'CAPTURE';

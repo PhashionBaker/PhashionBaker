@@ -6,7 +6,7 @@ $payment = new Payments();
 $payment->authorize(PaymentSource $paymentSource, float $amount);
 $payment->store()
 */
-class Payments extends Phalcon\Mvc\Model{
+class Payments extends \Phalcon\Mvc\Model{
   public $id;
   public $order_id;
   public $amount;
@@ -18,12 +18,11 @@ class Payments extends Phalcon\Mvc\Model{
       $this->processor = $settings['processor'];
   }
 
-  private function newTransaction(PaymentSource &$paymentSource, $params = array()){
-    if($paymentSource->hasPayment
-    Processor){
-      $processor = PaymentProcessor::findFirstById($paymentSource->payment_processor_id);
+  private function newTransaction(PaymentSources &$paymentSource, $params = array()){
+    if($paymentSource->hasPaymentProcessor()){
+      $processor = PaymentProcessors::findFirstById($paymentSource->payment_processor_id);
     }else{
-      $processor = PaymentProcessor::findFirst();
+      $processor = PaymentProcessors::findFirst();
     }
     $transaction = $processor->createTransaction($params);
     $transaction->payment_source_id = $paymentSource->id;
@@ -34,23 +33,40 @@ class Payments extends Phalcon\Mvc\Model{
     $this->hasMany('id', 'Transactions', 'payments_id');
   }
 
-  public function setProcessor(PaymentProcessor $processor){
+  public function setProcessor(PaymentProcessors $processor){
     $this->processor = $processor;
   }
 
   /* Methods That do the lifting */
-  public function agreement(PaymentSource $paymentSource){
+  public function agreement(PaymentSources $paymentSource){
     $transaction = $this->newTransaction($paymentSource);
     return $transaction->agreement($paymentSource);
   }
 
-  public function authorize(PaymentSource $paymentSource, float $amount, $params){
-    $transaction = $this->newTransaction($paymentSource, $params);
+  public function authorize(PaymentSources $paymentSource, $amount){
+    $transaction = $this->newTransaction($paymentSource);
     return $transaction->authorize($paymentSource, $amount);
   }
-  public function capture(Transactions $transaction, float $amount);
-  public function charge(PaymentSource $paymentSource, float $amount);
-  public function refund(Transaction $transaction, float $amount);
-  public function schedule(PaymentSource $paymentSource);
-  public function store(PaymentSource $paymentSource);
+  public function capture(Transactions $transaction, $amount){
+    $paymentSource = PaymentSources::findFirst($transaction->payment_processor_id);
+    $transaction = $this->newTransaction($paymentSource);
+    return $transaction->capture($transaction, $amount);
+  }
+  public function charge(PaymentSources $paymentSource, $amount){
+    $transaction = $this->newTransaction($paymentSource);
+    return $transaction->authorize($paymentSource, $amount);
+  }
+  public function refund(Transactions $transaction, $amount){
+    $paymentSource = PaymentSources::findFirst($transaction->payment_processor_id);
+    $transaction = $this->newTransaction($paymentSource);
+    return $transaction->refund($transaction, $amount);
+  }
+  public function schedule(PaymentSources $paymentSource){
+    $transaction = $this->newTransaction($paymentSource);
+    return $transaction->schedule($paymentSource, $amount);
+  }
+  public function store(PaymentSources $paymentSource){
+    $transaction = $this->newTransaction($paymentSource);
+    return $transaction->store($paymentSource, $amount);
+  }
 }

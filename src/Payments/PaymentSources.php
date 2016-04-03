@@ -7,7 +7,7 @@ class PaymentSourceType{
   static $Store = 'Store';
   static $DebitCard = 'DebitCard';
 }
-class PaymentSource extends Phalcon\Mvc\Model{
+class PaymentSources extends \Phalcon\Mvc\Model{
   /*
   * A PaymentSource contains all information needed to create a payment with any PaymentProcessor
   */
@@ -19,4 +19,8 @@ class PaymentSource extends Phalcon\Mvc\Model{
   public $address_id;
   public $securityNumber;
   public $payment_processor_id;
+
+  public function hasPaymentProcessor(){
+    return is_int($this->payment_processor_id);
+  }
 }

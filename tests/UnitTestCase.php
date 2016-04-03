@@ -2,6 +2,9 @@
 
 use Phalcon\Di;
 use Phalcon\Test\UnitTestCase as PhalconTestCase;
+use Phalcon\Mvc\Model\Manager as ModelsManager;
+use Phalcon\Db\Adapter\Pdo\Sqlite as Connection;
+use Phalcon\Mvc\Model\Metadata\Memory as MetaData;
 
 abstract class UnitTestCase extends PhalconTestCase
 {
@@ -28,7 +31,20 @@ abstract class UnitTestCase extends PhalconTestCase
         $di = Di::getDefault();
 
         // Get any DI components here. If you have a config, be sure to pass it to the parent
+        $di->set('modelsManager', function() {
+              return new ModelsManager();
+         });
+        $di->set('modelsMetadata', new MetaData());
 
+        $db = new Connection(
+            array(
+                "dbname" => "testing.db"
+            )
+        );
+        $di->set(
+            'db',
+            $db
+        );
         $this->setDi($di);
 
         $this->_loaded = true;
@@ -44,5 +60,6 @@ abstract class UnitTestCase extends PhalconTestCase
         if (!$this->_loaded) {
             throw new \PHPUnit_Framework_IncompleteTestError('Please run parent::setUp().');
         }
+        
     }
 }

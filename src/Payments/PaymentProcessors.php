@@ -9,7 +9,7 @@ sample usage:
 $processor = PaymentProcessor::findFirst();
 $transaction = processor->createTransaction();
 */
-class PaymentProcessor{
+class PaymentProcessors extends \Phalcon\Mvc\Model{
   public $id;
   public $name;
   public $type;
@@ -19,7 +19,7 @@ class PaymentProcessor{
   public $loginPassword;
   public $secretKey;
 
-  public createTransaction($params = array()){
+  public function createTransaction($params = array()){
     $class = $this->type.'Transactions';
     $instance = new $class($params);
     if($instance instanceof I_Transactions){
