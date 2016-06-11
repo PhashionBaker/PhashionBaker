@@ -1,10 +1,11 @@
 <?php
 namespace PhashionBaker\Payments;
 
-use TransactionTypes;
+use \PhashionBaker\Payments\TransactionTypes as TransactionTypes;
 
 class Transactions extends \Phalcon\Mvc\Model{
   use \PhashionBaker\ErrorTraits;
+
 
   public $amount;
   public $currency;
@@ -13,7 +14,7 @@ class Transactions extends \Phalcon\Mvc\Model{
   public $referenceString;
   public $payment_processor_id;
 
-  static $defaults = [
+  const defaults = [
     'amount'=>0,
     'currency'=>'USD',
     'payment_source_id'=> null,
@@ -23,12 +24,11 @@ class Transactions extends \Phalcon\Mvc\Model{
   ];
 
   public function onConstruct(array $params){
-    $this->build($params);
+    $this->initialize($params);
     $this->belongsTo('payment_processor_id', 'PaymentProcessor', 'id');
   }
 
-  static function setup(array $params){
-    parent::setup($params);
+  private function initialize(array $params = []){
     $settings = array_merge(Transactions::defaults, $params);
     foreach(array_keys(Transactions::defaults) as $propertyName){
       $this->{$propertyName} = $settings[$propertyName];

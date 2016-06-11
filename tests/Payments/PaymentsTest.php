@@ -2,46 +2,61 @@
 namespace Payments;
 
 use PhashionBaker\Payments\Transactions as Transactions;
-use PhashionBaker\Payments\I_Transactions as I_Transactions;
 use PhashionBaker\Payments\PaymentSources as PaymentSources;
 use PhashionBaker\Payments\PaymentProcessors as PaymentProcessors;
+use PhashionBaker\Payments\ManualTransactions as ManualTransactions;
 
-class MockTransactions extends Transactions implements I_Transactions{
-  public $hadErrors;
-  public $errors;
-  public $response = "SUCCESS";
-  public function agreement(PaymentSources $paymentSource){ return $this; }
-  public function authenticate(PaymentProcessors $paymentProcessor){ return $this; }
-  public function authorize(PaymentSources $paymentSource, $amount){ return $this; }
-  public function capture(Transactions $transaction, $amount){ return $this; }
-  public function charge(PaymentSources $paymentSource, $amount){ return $this; }
-  public function refund(Transactions $transaction, $amount){ return $this; }
-  public function schedule(PaymentSources $paymentSource){ return $this; }
-  public function store(PaymentSources $paymentSource){ return $this; }
-}
-
-/**
- * Class UnitTest
- */
 class PaymentsTest extends \UnitTestCase
 {
     public function setUp(){
       parent::setUp();
+
       $di = \Phalcon\Di::getDefault();
       $sqlite = $di->get('db');
-      $sqlite->execute('CREATE TABLE IF NOT EXISTS payment_processors (id int, type varchar(255)) ');
+      $queryDir = PHASHIONBAKER_PATH . '/Payments/queries/sqllite';
+      if ($dh = opendir($queryDir)){
+        while (($file = readdir($dh)) !== false){
+          if(is_file($queryDir . "/" . $file)){
+            $query = file_get_contents($queryDir . "/" . $file);
+            $sqlite->execute($query);
+          }
+        }
+        closedir($dh);
+      }
+
+      $this->payment = new \PhashionBaker\Payments\Payments();
+      $this->paymentSource = new PaymentSources();
+      $this->paymentProcessor = new PaymentProcessors();
+      $this->paymentProcessor->type = 'Manual';
+
     }
+
     public function testAuthorizeReturnsTransaction()
     {
-      $payment = new \PhashionBaker\Payments\Payments();
-      $paymentSource = new PaymentSources();
-      $paymentProcessor = new PaymentProcessors();
-      $paymentProcessor->type = 'Mock';
+      $this->paymentProcessor->setId(12345678940)->save();
+      $this->paymentSource->setPaymentProcessor($this->paymentProcessor)->save();
 
-      $tx = $payment->authorize($paymentSource, 101.99);
+      $tx = $this->payment->authorize($this->paymentSource, 101.99);
 
-      $this->assertEquals($ts->response, 'SUCCESS');
-      $this->assertInstanceOf($ts, new I_Transactions);
-      $this->assertInstanceOf($ts, new Transactions);
+      $this->assertEquals($tx->response, 'SUCCESS');
+      $this->assertInstanceOf('\PhashionBaker\Payments\I_Transactions', $tx);
+    }
+
+    /**
+    * Test that an authorization can be captured.
+    */
+
+    /**
+    * Test that direct charges can be issued.
+    */
+
+    /**
+    * Test that a payment can have a transaction refunded
+    */
+    
+    public function tearDown(){
+      unset($this->payment);
+      unset($this->paymentProcessor);
+      unset($this->paymentSource);
     }
 }

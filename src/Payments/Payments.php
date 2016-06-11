@@ -7,7 +7,7 @@ $payment->authorize(PaymentSource $paymentSource, float $amount);
 $payment->store()
 */
 class Payments extends \Phalcon\Mvc\Model{
-  public $id;
+  protected $id;
   public $order_id;
   public $amount;
 
@@ -24,6 +24,9 @@ class Payments extends \Phalcon\Mvc\Model{
     }else{
       $processor = PaymentProcessors::findFirst();
     }
+    if(!$processor){
+      throw new \Phalcon\Exception('You do not have any payment processors.');
+    }
     $transaction = $processor->createTransaction($params);
     $transaction->payment_source_id = $paymentSource->id;
     return $transaction;
@@ -37,7 +40,9 @@ class Payments extends \Phalcon\Mvc\Model{
     $this->processor = $processor;
   }
 
-  /* Methods That do the lifting */
+  /**
+  * Test that an authorization can be charged.
+  */
   public function agreement(PaymentSources $paymentSource){
     $transaction = $this->newTransaction($paymentSource);
     return $transaction->agreement($paymentSource);
@@ -49,6 +54,9 @@ class Payments extends \Phalcon\Mvc\Model{
   }
   public function capture(Transactions $transaction, $amount){
     $paymentSource = PaymentSources::findFirst($transaction->payment_processor_id);
+    if(!$transaction){
+      throw new \Phalcon\Exception('Unable to find the original payment source.');
+    }
     $transaction = $this->newTransaction($paymentSource);
     return $transaction->capture($transaction, $amount);
   }
@@ -58,6 +66,9 @@ class Payments extends \Phalcon\Mvc\Model{
   }
   public function refund(Transactions $transaction, $amount){
     $paymentSource = PaymentSources::findFirst($transaction->payment_processor_id);
+    if(!$transaction){
+      throw new \Phalcon\Exception('Unable to find the original payment source.');
+    }
     $transaction = $this->newTransaction($paymentSource);
     return $transaction->refund($transaction, $amount);
   }

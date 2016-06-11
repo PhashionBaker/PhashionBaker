@@ -18,8 +18,6 @@ class Site{
     	   "PhashionBaker"=>""]);
     //Create a DI
     $this->di = new DI();
-
-
     //Load Config
   	$config = new IniConfig($configFilename);
   	if(!defined('APP')){define('APP',__DIR__.'\\');}

@@ -1,5 +1,5 @@
-CREATE TABLE payment_processors (
-  id int NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS payment_processors (
+  id int,
   name varchar(255),
   type varchar(255),
   apiKey varchar(255),

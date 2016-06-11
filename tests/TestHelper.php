@@ -11,6 +11,8 @@ set_include_path(
     ROOT_PATH . PATH_SEPARATOR . get_include_path()
 );
 
+//Reset The SqlLite DB
+unlink("testing.db");
 $db = new SQLite3("testing.db");
 
 $loader = new \Phalcon\Loader();

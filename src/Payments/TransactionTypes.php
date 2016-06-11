@@ -2,8 +2,9 @@
 namespace PhashionBaker\Payments;
 
 class TransactionTypes{
-  static $DirectCharge = 'DIRECT CHARGE';
-  static $Authorization = 'AUTHORIZATION';
-  static $Capture = 'CAPTURE';
-  static $Refund = 'REFUND';
+  const DirectCharge = 'DIRECT CHARGE';
+  const Authorization = 'AUTHORIZATION';
+  const Capture = 'CAPTURE';
+  const Refund = 'REFUND';
+  const CashPayment = 'CASH PAYMENT';
 }
