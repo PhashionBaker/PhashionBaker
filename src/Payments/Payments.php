@@ -62,7 +62,7 @@ class Payments extends \Phalcon\Mvc\Model{
   }
   public function charge(PaymentSources $paymentSource, $amount){
     $transaction = $this->newTransaction($paymentSource);
-    return $transaction->authorize($paymentSource, $amount);
+    return $transaction->charge($paymentSource, $amount);
   }
   public function refund(Transactions $transaction, $amount){
     $paymentSource = PaymentSources::findFirst($transaction->payment_processor_id);
